@@ -1,8 +1,27 @@
+using FoodOrderingWeb.DataAccess;
+using FoodOrderingWeb.Models;
+using Google;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+
+
+
+
+
+
+
+builder.Services.AddDbContext<ApplicationDatabaseContextFoodWeb>(options =>
+options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddRazorPages();
+
+/*builder.Services.AddScoped<IProduct, EFProduct>();
+builder.Services.AddScoped<ICategory, EFCategory>();*/
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -23,5 +42,4 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
 app.Run();
