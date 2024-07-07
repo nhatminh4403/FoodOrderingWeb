@@ -13,6 +13,6 @@ namespace FoodOrderingWeb.Models
         [DisplayName("Tên")]
         public string? Name { get; set; }
 
-        public virtual ICollection<FoodItem>? Foods { get; set; }
+        public virtual ICollection<FoodItem>? FoodItems { get; set; }
     }
 }

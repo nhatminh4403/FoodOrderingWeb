@@ -10,10 +10,10 @@ namespace FoodOrderingWeb.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = "User Id is required")]
-        public int? UserId { get; set; }
+        public string UserId { get; set; }
 
         [ForeignKey("UserId")]
-        public virtual User? User { get; set; }
+        public virtual User User { get; set; }
 
         [Required(ErrorMessage = "Order Date is required")]
         public DateTime OrderDate { get; set; }

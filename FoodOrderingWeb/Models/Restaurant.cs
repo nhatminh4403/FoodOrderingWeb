@@ -10,10 +10,10 @@ namespace FoodOrderingWeb.Models
         public int RestaurantId { get; set; }
 
         [Required]
-        public int? UserId { get; set; }
+        public string UserId { get; set; }
         [Required]
         [ForeignKey("UserId")]
-        public virtual User? User { get; set; }
+        public virtual User User { get; set; }
 
         [Required(ErrorMessage ="Tên không được để trống")]
         [StringLength(100000,MinimumLength =5,ErrorMessage ="Tên ít nhất 5 ký tự")]

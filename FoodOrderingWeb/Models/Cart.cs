@@ -10,10 +10,10 @@ namespace FoodOrderingWeb.Models
         public int CartID { get; set; }
 
         [Required]
-        public int? UserID { get; set; }
+        public string UserID { get; set; }
 
         public virtual ICollection<CartDetail>? CartDetails { get; set; }
-        public virtual User? User { get; set; }
+        public virtual User User { get; set; }
 
 
         [NotMapped]
