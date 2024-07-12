@@ -15,7 +15,6 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/FoodOrderingWeb.styles.css" asp-append-version="true" />
-
      
     <link rel="icon" type="image/png" href="~/vendor/images/icons/favicon.png" />
 
@@ -65,6 +64,9 @@
 						</a>
 						@if(!signInManager.IsSignedIn(User) && user != null)
 						{
+							<a asp-area="Identity" asp-page="/Account/Register" class="flex-c-m trans-04 p-lr-25">
+								Sign In
+							</a>
 							<a href="/Identity/Account/Login" class="flex-c-m trans-04 p-lr-25">
 								Login
 							</a>
@@ -389,7 +391,6 @@
 		</span>
 	</div>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js"> </script>

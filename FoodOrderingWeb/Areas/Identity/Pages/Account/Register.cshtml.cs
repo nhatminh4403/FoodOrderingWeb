@@ -88,21 +88,7 @@ namespace FoodOrderingWeb.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
-            if (!_roleManager.RoleExistsAsync(Role.Role_Customer).GetAwaiter().GetResult())
-            {
-                _roleManager.CreateAsync(new IdentityRole(Role.Role_Customer)).GetAwaiter().GetResult();
-                _roleManager.CreateAsync(new IdentityRole(Role.Role_Admin)).GetAwaiter().GetResult();
-                _roleManager.CreateAsync(new IdentityRole(Role.Role_Seller)).GetAwaiter().GetResult();
-
-            }
-            Input = new()
-            {
-                RoleList= _roleManager.Roles.Select(x=>x.Name).Select(i=> new SelectListItem
-                {
-                    Text=i,
-                    Value=i
-                })
-            };
+            await InitializeRoleListAsync();
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         
@@ -159,11 +145,30 @@ namespace FoodOrderingWeb.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
-
+            await InitializeRoleListAsync();
             // If we got this far, something failed, redisplay form
             return Page();
         }
-        private IUserEmailStore<User> GetEmailStore()
+
+		private async Task InitializeRoleListAsync()
+		{
+			if (!_roleManager.RoleExistsAsync(Role.Role_Customer).GetAwaiter().GetResult())
+			{
+				await _roleManager.CreateAsync(new IdentityRole(Role.Role_Customer));
+				await _roleManager.CreateAsync(new IdentityRole(Role.Role_Admin));
+				await _roleManager.CreateAsync(new IdentityRole(Role.Role_Seller));
+			}
+
+			Input = new InputModel
+			{
+				RoleList = _roleManager.Roles.Select(x => x.Name).Select(i => new SelectListItem
+				{
+					Text = i,
+					Value = i
+				})
+			};
+		}
+		private IUserEmailStore<User> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)
             {
