@@ -40,5 +40,14 @@ namespace FoodOrderingWeb.Repository.Framework
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<IEnumerable<FoodItem>> GetFoodByCategory(int categoryId)
+        {
+            return await _context.FoodItems.Include(p=> p.Category).Where(p=>p.CategoryId == categoryId).ToListAsync();
+        }
+        public async Task<IEnumerable<FoodItem>> GetFoodsByRestaurant(int restaurantId)
+        {
+            return await _context.FoodItems.Where(p=>p.Equals(restaurantId)).ToListAsync();   
+        }
     }
 }

@@ -9,5 +9,6 @@ namespace FoodOrderingWeb.Repository.Interface
         Task AddAsync(Order order);
         Task UpdateAsync(Order order);
         Task DeleteAsync(int id);
+        Task<IEnumerable<Order>> GetOrdersByRestaurant(int restaurantId);
     }
 }

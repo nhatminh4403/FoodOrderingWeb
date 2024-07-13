@@ -58,7 +58,8 @@ namespace FoodOrderingWeb.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CategoryIcon = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -243,7 +244,8 @@ namespace FoodOrderingWeb.Migrations
                     FoodPrice = table.Column<double>(type: "float", nullable: false),
                     FoodDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MainPictureUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CategoryId = table.Column<int>(type: "int", nullable: true)
+                    CategoryId = table.Column<int>(type: "int", nullable: true),
+                    RestaurantId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -253,6 +255,12 @@ namespace FoodOrderingWeb.Migrations
                         column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_FoodItems_Restaurants_RestaurantId",
+                        column: x => x.RestaurantId,
+                        principalTable: "Restaurants",
+                        principalColumn: "RestaurantId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -266,47 +274,23 @@ namespace FoodOrderingWeb.Migrations
                     FoodName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CategoryDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Quantity = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ProductID = table.Column<int>(type: "int", nullable: true)
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CartDetails", x => x.CartDetailID);
                     table.ForeignKey(
-                        name: "FK_CartDetails_Carts_FoodItemId",
-                        column: x => x.FoodItemId,
+                        name: "FK_CartDetails_Carts_CartID",
+                        column: x => x.CartID,
                         principalTable: "Carts",
                         principalColumn: "CartID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CartDetails_FoodItems_ProductID",
-                        column: x => x.ProductID,
-                        principalTable: "FoodItems",
-                        principalColumn: "FoodId");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "FoodItemRestaurant",
-                columns: table => new
-                {
-                    FoodItemsFoodId = table.Column<int>(type: "int", nullable: false),
-                    RestaurantsRestaurantId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FoodItemRestaurant", x => new { x.FoodItemsFoodId, x.RestaurantsRestaurantId });
-                    table.ForeignKey(
-                        name: "FK_FoodItemRestaurant_FoodItems_FoodItemsFoodId",
-                        column: x => x.FoodItemsFoodId,
+                        name: "FK_CartDetails_FoodItems_FoodItemId",
+                        column: x => x.FoodItemId,
                         principalTable: "FoodItems",
                         principalColumn: "FoodId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_FoodItemRestaurant_Restaurants_RestaurantsRestaurantId",
-                        column: x => x.RestaurantsRestaurantId,
-                        principalTable: "Restaurants",
-                        principalColumn: "RestaurantId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -335,7 +319,7 @@ namespace FoodOrderingWeb.Migrations
                         column: x => x.OrderId,
                         principalTable: "Orders",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -398,14 +382,14 @@ namespace FoodOrderingWeb.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CartDetails_CartID",
+                table: "CartDetails",
+                column: "CartID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CartDetails_FoodItemId",
                 table: "CartDetails",
                 column: "FoodItemId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CartDetails_ProductID",
-                table: "CartDetails",
-                column: "ProductID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Carts_UserID",
@@ -413,14 +397,14 @@ namespace FoodOrderingWeb.Migrations
                 column: "UserID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FoodItemRestaurant_RestaurantsRestaurantId",
-                table: "FoodItemRestaurant",
-                column: "RestaurantsRestaurantId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_FoodItems_CategoryId",
                 table: "FoodItems",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FoodItems_RestaurantId",
+                table: "FoodItems",
+                column: "RestaurantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderDetails_FoodItemId",
@@ -470,9 +454,6 @@ namespace FoodOrderingWeb.Migrations
                 name: "CartDetails");
 
             migrationBuilder.DropTable(
-                name: "FoodItemRestaurant");
-
-            migrationBuilder.DropTable(
                 name: "OrderDetails");
 
             migrationBuilder.DropTable(
@@ -485,19 +466,19 @@ namespace FoodOrderingWeb.Migrations
                 name: "Carts");
 
             migrationBuilder.DropTable(
-                name: "Restaurants");
-
-            migrationBuilder.DropTable(
                 name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "FoodItems");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Categories");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "Restaurants");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }

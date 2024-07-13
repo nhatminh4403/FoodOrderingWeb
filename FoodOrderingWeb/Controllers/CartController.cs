@@ -1,10 +1,9 @@
-﻿using FoodOrderingWeb.Repository.Framework;
-using FoodOrderingWeb.Repository.Interface;
+﻿using FoodOrderingWeb.Repository.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodOrderingWeb.Controllers
 {
-	public class CartController : Controller
+    public class CartController : Controller
 	{
 
 		private readonly Interface_CartRepository _cartRepository;

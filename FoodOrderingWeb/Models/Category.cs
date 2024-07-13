@@ -13,6 +13,9 @@ namespace FoodOrderingWeb.Models
         [DisplayName("Tên")]
         public string? Name { get; set; }
 
+        [Required]
+        public string? CategoryIcon { get; set; }
+
         public virtual ICollection<FoodItem>? FoodItems { get; set; }
     }
 }

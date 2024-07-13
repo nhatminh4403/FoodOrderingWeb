@@ -22,21 +22,6 @@ namespace FoodOrderingWeb.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("FoodItemRestaurant", b =>
-                {
-                    b.Property<int>("FoodItemsFoodId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RestaurantsRestaurantId")
-                        .HasColumnType("int");
-
-                    b.HasKey("FoodItemsFoodId", "RestaurantsRestaurantId");
-
-                    b.HasIndex("RestaurantsRestaurantId");
-
-                    b.ToTable("FoodItemRestaurant");
-                });
-
             modelBuilder.Entity("FoodOrderingWeb.Models.Cart", b =>
                 {
                     b.Property<int>("CartID")
@@ -79,17 +64,14 @@ namespace FoodOrderingWeb.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("ProductID")
-                        .HasColumnType("int");
-
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.HasKey("CartDetailID");
 
-                    b.HasIndex("FoodItemId");
+                    b.HasIndex("CartID");
 
-                    b.HasIndex("ProductID");
+                    b.HasIndex("FoodItemId");
 
                     b.ToTable("CartDetails");
                 });
@@ -101,6 +83,10 @@ namespace FoodOrderingWeb.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CategoryIcon")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -138,9 +124,14 @@ namespace FoodOrderingWeb.Migrations
                     b.Property<string>("MainPictureUrl")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("RestaurantId")
+                        .HasColumnType("int");
+
                     b.HasKey("FoodId");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("RestaurantId");
 
                     b.ToTable("FoodItems");
                 });
@@ -467,21 +458,6 @@ namespace FoodOrderingWeb.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("FoodItemRestaurant", b =>
-                {
-                    b.HasOne("FoodOrderingWeb.Models.FoodItem", null)
-                        .WithMany()
-                        .HasForeignKey("FoodItemsFoodId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FoodOrderingWeb.Models.Restaurant", null)
-                        .WithMany()
-                        .HasForeignKey("RestaurantsRestaurantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("FoodOrderingWeb.Models.Cart", b =>
                 {
                     b.HasOne("FoodOrderingWeb.Models.User", "User")
@@ -497,13 +473,15 @@ namespace FoodOrderingWeb.Migrations
                 {
                     b.HasOne("FoodOrderingWeb.Models.Cart", "Cart")
                         .WithMany("CartDetails")
-                        .HasForeignKey("FoodItemId")
+                        .HasForeignKey("CartID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("FoodOrderingWeb.Models.FoodItem", "FoodItem")
-                        .WithMany()
-                        .HasForeignKey("ProductID");
+                        .WithMany("CartDetail")
+                        .HasForeignKey("FoodItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Cart");
 
@@ -516,7 +494,15 @@ namespace FoodOrderingWeb.Migrations
                         .WithMany("FoodItems")
                         .HasForeignKey("CategoryId");
 
+                    b.HasOne("FoodOrderingWeb.Models.Restaurant", "Restaurant")
+                        .WithMany("FoodItems")
+                        .HasForeignKey("RestaurantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Category");
+
+                    b.Navigation("Restaurant");
                 });
 
             modelBuilder.Entity("FoodOrderingWeb.Models.Order", b =>
@@ -533,7 +519,7 @@ namespace FoodOrderingWeb.Migrations
             modelBuilder.Entity("FoodOrderingWeb.Models.OrderDetail", b =>
                 {
                     b.HasOne("FoodOrderingWeb.Models.FoodItem", "FoodItem")
-                        .WithMany()
+                        .WithMany("OrderDetail")
                         .HasForeignKey("FoodItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -634,12 +620,21 @@ namespace FoodOrderingWeb.Migrations
 
             modelBuilder.Entity("FoodOrderingWeb.Models.FoodItem", b =>
                 {
+                    b.Navigation("CartDetail");
+
+                    b.Navigation("OrderDetail");
+
                     b.Navigation("PictureLists");
                 });
 
             modelBuilder.Entity("FoodOrderingWeb.Models.Order", b =>
                 {
                     b.Navigation("OrderDetails");
+                });
+
+            modelBuilder.Entity("FoodOrderingWeb.Models.Restaurant", b =>
+                {
+                    b.Navigation("FoodItems");
                 });
 #pragma warning restore 612, 618
         }

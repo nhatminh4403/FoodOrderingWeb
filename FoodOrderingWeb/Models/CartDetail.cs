@@ -20,10 +20,10 @@ namespace FoodOrderingWeb.Models
         public int Quantity { get; set; }
         public decimal Price { get; set; }
         // Navigation properties
-        [ForeignKey(nameof(FoodItemId))]
+        [ForeignKey(nameof(CartID))]
         public virtual Cart? Cart { get; set; }
 
-        [ForeignKey("ProductID")]
+        [ForeignKey("FoodItemId")]
         public virtual FoodItem? FoodItem { get; set; }
     }
 }

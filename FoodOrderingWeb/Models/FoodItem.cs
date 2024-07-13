@@ -30,8 +30,13 @@ namespace FoodOrderingWeb.Models
 
         [ForeignKey(nameof(CategoryId))]
         public virtual Category? Category { get; set; }
+        public int RestaurantId { get; set; }
 
-        public virtual ICollection<Restaurant>? Restaurants { get; set; }
+        [ForeignKey("RestaurantId")]
+        public virtual Restaurant? Restaurant { get; set; }
+
         public virtual ICollection<PictureLists>? PictureLists { get; set; }
+        public virtual ICollection<OrderDetail>? OrderDetail { get; set; }
+        public virtual ICollection<CartDetail>? CartDetail { get; set; }
     }
 }

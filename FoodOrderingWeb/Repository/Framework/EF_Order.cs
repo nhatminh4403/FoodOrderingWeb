@@ -14,7 +14,7 @@ namespace FoodOrderingWeb.Repository.Framework
         }
         public async Task<IEnumerable<Order>> GetAllAsync() 
         {
-            return await _databaseContext.Orders.Include(o => o.OrderDetails).ToListAsync();
+            return await _databaseContext.Orders.Include(o => o.OrderDetails).ThenInclude(o=>o.FoodItem).ToListAsync();
         }
         public async Task<Order> GetByIdAsync(int id) 
         { 
@@ -38,6 +38,15 @@ namespace FoodOrderingWeb.Repository.Framework
                 _databaseContext.Orders.Remove(order);
                 await _databaseContext.SaveChangesAsync();
             }
+        }
+
+        public async Task<IEnumerable<Order>> GetOrdersByRestaurant(int restaurantId)
+        {
+            return await _databaseContext.Orders
+                                  .Include(o => o.OrderDetails)
+                                  .ThenInclude(oi => oi.FoodItem)
+                                  .Where(o => o.OrderDetails.Any(oi => oi.FoodItem.RestaurantId == restaurantId))
+                                  .ToListAsync();
         }
     }
 }

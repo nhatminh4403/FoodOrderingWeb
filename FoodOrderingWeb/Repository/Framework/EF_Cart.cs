@@ -1,5 +1,6 @@
 ﻿using FoodOrderingWeb.DataAccess;
 using FoodOrderingWeb.Models;
+using FoodOrderingWeb.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodOrderingWeb.Repository.Framework

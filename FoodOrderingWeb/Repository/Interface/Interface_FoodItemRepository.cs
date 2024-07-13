@@ -1,4 +1,5 @@
 ﻿using FoodOrderingWeb.Models;
+using Microsoft.EntityFrameworkCore;
 namespace FoodOrderingWeb.Repository.Interface
 {
     public interface Interface_FoodItemRepository
@@ -8,5 +9,9 @@ namespace FoodOrderingWeb.Repository.Interface
         Task AddAsync(FoodItem foodItem);
         Task UpdateAsync(FoodItem foodItem);
         Task DeleteAsync(int id);
+
+        Task<IEnumerable<FoodItem>> GetFoodByCategory(int categoryId);
+        Task<IEnumerable<FoodItem>> GetFoodsByRestaurant(int restaurantId);
+       
     }
 }

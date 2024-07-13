@@ -1,6 +1,6 @@
 ﻿using FoodOrderingWeb.Models;
 
-namespace FoodOrderingWeb.Repository.Framework
+namespace FoodOrderingWeb.Repository.Interface
 {
     public interface Interface_CartRepository
     {

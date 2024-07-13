@@ -17,7 +17,7 @@ namespace FoodOrderingWeb.Repository.Framework
         {
             return await _databaseContext.Categories.Include(p=>p.FoodItems).ToListAsync();
         }
-        public async Task<Category> FindByIdAsync(int id)
+        public async Task<Category> GetByIdAsync(int id)
         {
             return await _databaseContext.Categories.Include(p => p.FoodItems).FirstAsync(p=>p.Id == id);
         }
