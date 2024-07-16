@@ -13,20 +13,20 @@ namespace FoodOrderingWeb.Models
 
         [Required(ErrorMessage = "Tên sản phẩm là bắt buộc"), 
             StringLength(maximumLength:  100000,MinimumLength =2, ErrorMessage = "Tên sản phẩm phải ít nhất 2 ký tự")]
-        public string? FoodName { get; set; }
+        public string FoodName { get; set; }
 
 
         [Required(ErrorMessage ="Không được để trống")]
         [Range(1000,1000000000000000000,ErrorMessage ="Giá sản phẩm ít nhất từ 1000 Vnđ trở lên")]
-        public double? FoodPrice { get; set; }
+        public double FoodPrice { get; set; }
 
         [Required(ErrorMessage = "Không được để trống")]
         [DisplayName("Mô tả")]
-        public string? FoodDescription { get; set; }
+        public string FoodDescription { get; set; }
 
         [DisplayName("Ảnh đại diện")]
-        public string? MainPictureUrl { get; set; }
-        public int? CategoryId { get; set; }
+        public string MainPictureUrl { get; set; }
+        public int CategoryId { get; set; }
 
         [ForeignKey(nameof(CategoryId))]
         public virtual Category? Category { get; set; }

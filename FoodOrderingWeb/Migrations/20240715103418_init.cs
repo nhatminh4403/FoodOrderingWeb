@@ -199,7 +199,9 @@ namespace FoodOrderingWeb.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    TotalAmount = table.Column<double>(type: "float", nullable: false),
+                    ShippingAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -243,8 +245,8 @@ namespace FoodOrderingWeb.Migrations
                     FoodName = table.Column<string>(type: "nvarchar(max)", maxLength: 100000, nullable: false),
                     FoodPrice = table.Column<double>(type: "float", nullable: false),
                     FoodDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MainPictureUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CategoryId = table.Column<int>(type: "int", nullable: true),
+                    MainPictureUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
                     RestaurantId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -254,7 +256,8 @@ namespace FoodOrderingWeb.Migrations
                         name: "FK_FoodItems_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_FoodItems_Restaurants_RestaurantId",
                         column: x => x.RestaurantId,
@@ -272,9 +275,10 @@ namespace FoodOrderingWeb.Migrations
                     CartID = table.Column<int>(type: "int", nullable: false),
                     FoodItemId = table.Column<int>(type: "int", nullable: false),
                     FoodName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FoodImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CategoryDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Quantity = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    Price = table.Column<double>(type: "float", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -302,7 +306,7 @@ namespace FoodOrderingWeb.Migrations
                     OrderId = table.Column<int>(type: "int", nullable: false),
                     FoodItemId = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Price = table.Column<double>(type: "float", nullable: false),
                     FoodImage = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>

@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Sign Up As Partner</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="~/seller/assets/images/favicon.ico" />
+
+    <!-- Library / Plugin Css Build -->
+    <link rel="stylesheet" href="~/seller/assets/css/core/libs.min.css">
+
+    <!-- Custom Css -->
+    <link rel="stylesheet" href="~/seller/assets/css/aprycot.min.css?v=1.0.0">
+</head>
+<body class=" " data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">
+    <div class="wrapper">
+        @RenderBody()
+    </div>
+    <script src="~/seller/assets/js/core/libs.min.js"></script>
+
+    <!-- External Library Bundle Script -->
+    <script src="~/seller/assets/js/core/external.min.js"></script>
+
+    <!-- Mapchart JavaScript -->
+    <script src="~/seller/assets/js/charts/dashboard.js"></script>
+
+    <!-- fslightbox JavaScript -->
+    <script src="~/seller/assets/js/fslightbox.js"></script>
+
+    <!-- app JavaScript -->
+    <script src="~/seller/assets/js/app.js"></script>
+
+    <!-- moment JavaScript -->
+    <script src="~/seller/assets/vendor/moment.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

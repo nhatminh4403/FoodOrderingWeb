@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using FoodOrderingWeb.Models.Enum;
 
 namespace FoodOrderingWeb.Models
 {
@@ -19,9 +20,12 @@ namespace FoodOrderingWeb.Models
         public DateTime OrderDate { get; set; }
 
         [Required(ErrorMessage = "Total Amount is required")]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal? TotalAmount { get; set; }
+        public double TotalAmount { get; set; }
 
+        [Required]
+        public string ShippingAddress { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
+        [Required]
+        public OrderStatus Status { get; set; }
     }
 }

@@ -15,10 +15,11 @@ namespace FoodOrderingWeb.Models
         [Required]
         public int FoodItemId { get; set; }
         public string? FoodName { get; set; }
+        public string? FoodImage { get; set; }
         public string? CategoryDescription { get; set; }
         [Required]
         public int Quantity { get; set; }
-        public decimal Price { get; set; }
+        public double Price { get; set; }
         // Navigation properties
         [ForeignKey(nameof(CartID))]
         public virtual Cart? Cart { get; set; }

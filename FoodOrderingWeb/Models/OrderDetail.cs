@@ -26,8 +26,7 @@ namespace FoodOrderingWeb.Models
         public int Quantity { get; set; }
 
         [Required(ErrorMessage = "Price is required")]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal Price { get; set; }
+        public double Price { get; set; }
 
         public string? FoodImage { get; set; }
     }

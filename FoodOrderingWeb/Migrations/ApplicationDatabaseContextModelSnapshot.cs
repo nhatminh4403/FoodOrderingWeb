@@ -55,14 +55,17 @@ namespace FoodOrderingWeb.Migrations
                     b.Property<string>("CategoryDescription")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("FoodImage")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("FoodItemId")
                         .HasColumnType("int");
 
                     b.Property<string>("FoodName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -105,7 +108,7 @@ namespace FoodOrderingWeb.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FoodId"));
 
-                    b.Property<int?>("CategoryId")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("FoodDescription")
@@ -117,11 +120,11 @@ namespace FoodOrderingWeb.Migrations
                         .HasMaxLength(100000)
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double?>("FoodPrice")
-                        .IsRequired()
+                    b.Property<double>("FoodPrice")
                         .HasColumnType("float");
 
                     b.Property<string>("MainPictureUrl")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("RestaurantId")
@@ -147,9 +150,15 @@ namespace FoodOrderingWeb.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal?>("TotalAmount")
+                    b.Property<string>("ShippingAddress")
                         .IsRequired()
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<double>("TotalAmount")
+                        .HasColumnType("float");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -179,8 +188,8 @@ namespace FoodOrderingWeb.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -492,7 +501,9 @@ namespace FoodOrderingWeb.Migrations
                 {
                     b.HasOne("FoodOrderingWeb.Models.Category", "Category")
                         .WithMany("FoodItems")
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("FoodOrderingWeb.Models.Restaurant", "Restaurant")
                         .WithMany("FoodItems")

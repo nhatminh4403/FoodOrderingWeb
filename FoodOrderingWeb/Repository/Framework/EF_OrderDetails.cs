@@ -17,6 +17,10 @@ namespace FoodOrderingWeb.Repository.Framework
         {
             return await _databaseContext.OrderDetails.Include(o=>o.Order).Include(o=>o.FoodItem).FirstAsync(o=>o.OrderId == id);
         }
-
+        public async Task AddAsync(OrderDetail orderDetail)
+        {
+            _databaseContext.OrderDetails.Add(orderDetail);
+            await _databaseContext.SaveChangesAsync();
+        }
     }
 }
