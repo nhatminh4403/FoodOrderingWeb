@@ -57,13 +57,13 @@
                         <img src="~/seller/assets/images/favicon.png" class="img-fluid logo-img" alt="img5">
                     </a>
                     <h2 class="mb-2 text-center">Sign Up</h2>
-                    <p class="text-center">Create your Aprycot account.</p>
+                    <p class="text-center">Create your partner account.</p>
                     <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="form-group">
-                                    <label asp-for="Input.RestaurantName" class="form-label">Full Name</label>
+                                    <label asp-for="Input.RestaurantName" class="form-label"></label>
                                     <input type="text" class="form-control form-control-sm" asp-for="Input.RestaurantName" placeholder=" " aria-required="true" />
                                     <span asp-validation-for="Input.RestaurantAddress" class="text-danger"></span>
                                 </div>

@@ -9,13 +9,14 @@ namespace FoodOrderingWeb.Models
         [Required(ErrorMessage = "Không được để trống")]
         [StringLength(50)]
         [DisplayName("Họ và tên")]
-        public string FullName { get; set; }
+        public string? FullName { get; set; }
         [Required(ErrorMessage = "Không được để trống")]
         [DisplayName("Số điện thoại")]
         [DataType(DataType.PhoneNumber)]
-        public  string PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; }
        
         [DisplayName("Địa chỉ")]
-        public string DefaultAddress { get; set; }
+        public string? DefaultAddress { get; set; }
+        public virtual Restaurant Restaurant { get; set; }
     }
 }

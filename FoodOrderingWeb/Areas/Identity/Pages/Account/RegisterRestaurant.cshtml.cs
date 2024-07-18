@@ -86,7 +86,7 @@ namespace FoodOrderingWeb.Areas.Identity.Pages.Account
             [Phone(ErrorMessage = "Invalid Phone Number")]
             [DataType(DataType.Password)]
             public string? StorePhoneNumber { get; set; }
-            public string Role {  get; set; }
+
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -110,7 +110,11 @@ namespace FoodOrderingWeb.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = new User { 
-                    UserName = Input.Email, Email = Input.Email
+                    UserName = Input.Email,
+                    Email = Input.Email,
+                    FullName="",
+                    PhoneNumber="",
+                    DefaultAddress=""
                 };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
@@ -120,22 +124,18 @@ namespace FoodOrderingWeb.Areas.Identity.Pages.Account
                         UserId = user.Id,
                         RestaurantName = Input.RestaurantName,
                         RestaurantAddress = Input.RestaurantAddress,
-                        StorePhoneNumber = Input.StorePhoneNumber
+                        StorePhoneNumber = Input.StorePhoneNumber,
                     };
+                    user.FullName = restaurant.RestaurantName;
+                    user.PhoneNumber = restaurant.StorePhoneNumber;
+                    user.DefaultAddress= restaurant.RestaurantAddress;
                     _logger.LogInformation("User created a new account with password.");
-                    
 
+                    await _userManager.AddToRoleAsync(user, Role.Role_Seller);
                     _databaseContext.Restaurants.Add(restaurant);
                     await _databaseContext.SaveChangesAsync();
 
-                    if (!string.IsNullOrEmpty(Input.Role))
-                    {
-                        await _userManager.AddToRoleAsync(user, Input.Role);
-                    }
-                    else
-                    {
-                        await _userManager.AddToRoleAsync(user, Role.Role_Seller);
-                    }
+                    
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
@@ -164,6 +164,13 @@ namespace FoodOrderingWeb.Areas.Identity.Pages.Account
             }
 
             // If we got this far, something failed, redisplay form
+            if (string.IsNullOrEmpty(Input.Email) || string.IsNullOrEmpty(Input.Password) ||
+                string.IsNullOrEmpty(Input.RestaurantName) || string.IsNullOrEmpty(Input.RestaurantAddress) ||
+                string.IsNullOrEmpty(Input.StorePhoneNumber))
+            {
+                ModelState.AddModelError(string.Empty, "All fields are required.");
+                return Page();
+            }
             return Page();
         }
         private IUserEmailStore<User> GetEmailStore()

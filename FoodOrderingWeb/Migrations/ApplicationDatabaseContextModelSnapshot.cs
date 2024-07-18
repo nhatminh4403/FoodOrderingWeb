@@ -254,7 +254,8 @@ namespace FoodOrderingWeb.Migrations
 
                     b.HasKey("RestaurantId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Restaurants");
                 });
@@ -560,8 +561,8 @@ namespace FoodOrderingWeb.Migrations
             modelBuilder.Entity("FoodOrderingWeb.Models.Restaurant", b =>
                 {
                     b.HasOne("FoodOrderingWeb.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                        .WithOne("Restaurant")
+                        .HasForeignKey("FoodOrderingWeb.Models.Restaurant", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -646,6 +647,12 @@ namespace FoodOrderingWeb.Migrations
             modelBuilder.Entity("FoodOrderingWeb.Models.Restaurant", b =>
                 {
                     b.Navigation("FoodItems");
+                });
+
+            modelBuilder.Entity("FoodOrderingWeb.Models.User", b =>
+                {
+                    b.Navigation("Restaurant")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -30,7 +30,7 @@ builder.Services.AddScoped<Interface_OrderDetailsRepository, EF_OrderDetails>();
 builder.Services.AddScoped<Interface_OrderRepository, EF_Order>();
 builder.Services.AddScoped<Interface_PictureListRepository, EF_PictureList>();
 builder.Services.AddScoped<Interface_CartRepository, EF_Cart>();
-
+builder.Services.AddScoped<Interface_RestaurantRepository, EF_Restaurant>();
 builder.Services.ConfigureApplicationCookie(option =>
 {
     option.LoginPath = $"/Identity/Account/Login";
