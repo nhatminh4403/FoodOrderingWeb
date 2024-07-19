@@ -10,7 +10,14 @@ namespace FoodOrderingWeb.Areas.Admin.Controllers
 	{
 		public IActionResult Index()
 		{
-			return View();
+            ViewData["CurrentPage"] = "Trang chủ";
+
+            return View();
 		}
+        public IActionResult Charts() 
+        {
+            ViewData["CurrentPage"] = "Thống kê";
+            return View();
+        }
 	}
 }

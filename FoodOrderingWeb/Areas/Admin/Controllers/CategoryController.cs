@@ -14,10 +14,12 @@ namespace FoodOrderingWeb.Areas.Admin.Controllers
         {
             _categoryRepository = categoryRepository;
         }
-
+        
         public async Task<IActionResult> Index()
         {
             var category = await _categoryRepository.GetCategoriesAsync();
+            ViewData["CurrentPage"] = "Danh mục";
+
             return View(category);
         }
         private async Task<string?> SaveImage(IFormFile image)

@@ -1,0 +1,25 @@
+﻿<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Real Time Chart</h5>
+                <div id="real-time" style="height:400px;"></div>
+                <p>
+                    Time between updates:
+                    <input id="updateInterval" type="text" value="" style="text-align: right; width:5em"> milliseconds
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/admin/assets/libs/chart/excanvas.min.js"></script>
+
+    <script src="~/admin/assets/libs/chart/jquery.peity.min.js"></script>
+    <script src="~/admin/assets/libs/chart/matrix.charts.js"></script>
+    <script src="~/admin/assets/libs/chart/jquery.flot.pie.min.js"></script>
+    <script src="~/admin/assets/libs/flot.tooltip/js/jquery.flot.tooltip.min.js"></script>
+    <script src="~/admin/assets/libs/chart/turning-series.js"></script>
+    <script src="~/admin/dist/js/pages/chart/chart-page-init.js"></script>
+    </script>
+}
