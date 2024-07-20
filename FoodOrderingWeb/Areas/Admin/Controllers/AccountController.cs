@@ -1,7 +1,11 @@
-﻿using FoodOrderingWeb.Models;
+﻿using FoodOrderingWeb.Areas.Admin.ViewModel;
+using FoodOrderingWeb.DataAccess;
+using FoodOrderingWeb.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FoodOrderingWeb.Areas.Admin.Controllers
 {
@@ -9,79 +13,68 @@ namespace FoodOrderingWeb.Areas.Admin.Controllers
     [Authorize(Roles =Role.Role_Admin)]
     public class AccountController : Controller
     {
+        private readonly UserManager<User> _userManager;
+        private readonly ApplicationDatabaseContext _context;
+        public AccountController(UserManager<User> userManager, ApplicationDatabaseContext context)
+        {
+            _userManager = userManager;
+            _context = context;
+        }
+
         // GET: AccountController
-        public ActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var userList = await _userManager.Users.ToListAsync();
+            ViewData["CurrentPage"] = "Tài khoản";
+
+            var userWithRoles = new List<UserRolesViewModel>();
+            foreach (var user in userList) 
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                userWithRoles.Add(new UserRolesViewModel
+                {
+                    User=user,
+                    Roles=roles
+                });
+            }
+
+            return View(userWithRoles);
         }
 
-        // GET: AccountController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: AccountController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: AccountController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> DisableAccount(string userId, int? days)
         {
-            try
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
             {
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            catch
-            {
-                return View();
-            }
-        }
 
-        // GET: AccountController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
+            if (days.HasValue)
+            {
+                if (days.Value == 0)
+                {
+                    user.LockoutEnd = DateTimeOffset.MaxValue;
+                }
+                else
+                {
+                    user.LockoutEnd = DateTimeOffset.UtcNow.AddDays(days.Value);
+                }
+            }
+            else
+            {
+                user.LockoutEnd = DateTimeOffset.MaxValue;
+            }
 
-        // POST: AccountController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+            user.LockoutEnabled = true;
+            var result = await _userManager.UpdateAsync(user);
 
-        // GET: AccountController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
+            if (result.Succeeded)
+            {
+                return Ok();
+            }
 
-        // POST: AccountController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            return BadRequest();
         }
     }
 }

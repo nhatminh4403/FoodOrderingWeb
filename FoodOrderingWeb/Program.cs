@@ -18,7 +18,11 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectio
 
 
 
-builder.Services.AddIdentity<User, IdentityRole>()
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+	{
+		options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+		options.Lockout.MaxFailedAccessAttempts = 5;
+	})
  .AddDefaultTokenProviders()
  .AddDefaultUI()
  .AddEntityFrameworkStores<ApplicationDatabaseContext>();

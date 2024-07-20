@@ -9,7 +9,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
+	<meta charset="UTF-8">	
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - FoodOrderingWeb</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
@@ -43,7 +43,8 @@
 
 	<link rel="stylesheet" type="text/css" href="~/vendor/css/util.css">
 	<link rel="stylesheet" type="text/css" href="~/vendor/css/main.css">
-     
+	@RenderSection("Styles", required: false)
+
 </head>
 <body class="animsition">
 	<form id="logoutForm" style="display:none;" method="post" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"></form>
@@ -395,7 +396,7 @@
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js"> </script>
-	<script src="~/vendor/vendor/jquery/jquery-3.2.1.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 	 
 	<script src="~/vendor/vendor/animsition/js/animsition.min.js"></script>
 	 

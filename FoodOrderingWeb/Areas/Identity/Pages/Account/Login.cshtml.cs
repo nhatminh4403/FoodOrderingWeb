@@ -77,12 +77,28 @@ namespace FoodOrderingWeb.Areas.Identity.Pages.Account
             returnUrl ??= Url.Content("~/");
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-        
             if (ModelState.IsValid)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+                var user = await _userManager.FindByEmailAsync(Input.Email);
+                if (user != null)
+                {
+                    if (user.LockoutEnabled && user.LockoutEnd > DateTimeOffset.UtcNow)
+                    {
+                        // Trả về thông báo lỗi qua AJAX
+                        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                        {
+                            return new JsonResult(new { success = false, message = "Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ với quản trị viên." });
+                        }
+                        else
+                        {
+                            TempData["UserLockedOut"] = "Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ với quản trị viên.";
+                            return RedirectToPage();
+                        }
+                    }
+                }
+
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
@@ -100,11 +116,9 @@ namespace FoodOrderingWeb.Areas.Identity.Pages.Account
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return Page();
                 }
             }
 
-            // If we got this far, something failed, redisplay form
             return Page();
         }
     }
