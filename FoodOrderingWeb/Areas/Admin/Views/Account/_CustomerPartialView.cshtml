@@ -1,0 +1,56 @@
+﻿@model IEnumerable<FoodOrderingWeb.Areas.Admin.ViewModel.CustomerAccVM>
+
+<div class="table-responsive">
+    <table id="customer_table" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Tên</th>
+                <th>Số điện thoại</th>
+                <th>Địa chỉ</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.User.Email</td>
+                    <td>@item.User.FullName</td>
+                    <td>@item.User.PhoneNumber</td>
+                    <td>
+                        @if (string.IsNullOrEmpty(item.User.DefaultAddress))
+                        {
+                            <span>Không có</span>
+                        }
+                        else
+                        {
+                            <span>@item.User.DefaultAddress</span>
+                        }
+                    </td>
+                    <td>
+                        @if (item.User.LockoutEnd.HasValue && item.User.LockoutEnd > DateTimeOffset.UtcNow)
+                        {
+                            <a href="javascript:void(0)" onclick="showLockoutDetails('@item.User.LockoutEnd')">
+                                Vô hiệu hóa đến: @item.User.LockoutEnd.Value.ToString("dd/MM/yyyy HH:mm")
+                            </a>
+                        }
+                        else
+                        {
+                            <button class="btn btn-danger" onclick="showDisableAccountModal('@item.User.Id')">Vô hiệu hóa</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>Email</th>
+                <th>Tên</th>
+                <th>Số điện thoại</th>
+                <th>Địa chỉ</th>
+                <th>Hành động</th>
+            </tr>
+        </tfoot>
+    </table>
+</div>

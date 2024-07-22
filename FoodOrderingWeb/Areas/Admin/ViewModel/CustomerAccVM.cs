@@ -1,9 +1,10 @@
 ﻿using FoodOrderingWeb.Models;
+
 namespace FoodOrderingWeb.Areas.Admin.ViewModel
 {
-    public class UserRolesViewModel
+    public class CustomerAccVM
     {
         public User User { get; set; }
-        public IList<string> Roles { get; set; }
+        public DateTimeOffset? LockoutEnd { get; set; }
     }
 }

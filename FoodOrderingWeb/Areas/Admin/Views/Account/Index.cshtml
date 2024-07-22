@@ -1,4 +1,4 @@
-﻿@model IEnumerable<FoodOrderingWeb.Areas.Admin.ViewModel.UserRolesViewModel>
+﻿@model FoodOrderingWeb.Areas.Admin.ViewModel.AccountVM
 
 @section Styles {
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.min.css" rel="stylesheet">
@@ -15,82 +15,35 @@
             margin-top: auto;
         }
 
-        /* Đảm bảo không có margin/padding không mong muốn */
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
+        .tab-content {
+            margin-top: 20px;
         }
     </style>
 }
+
 <div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Danh mục món ăn</h5>
-                <div class="table-responsive">
-                    <table id="zero_config" class="table table-striped table-bordered">
-                        <thead>
-                            <tr>
-                                <th>
-                                    Email
-                                </th>
-                                <th>
-                                    Tên
-                                </th>
-                                <th>
-                                    Số điện thoại
-                                </th>
-                                <th>
-                                    Vai trò
-                                </th>
-                                <th>Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td>
-                                        @item.User.Email
+                <h5 class="card-title">Quản lý tài khoản</h5>
 
-                                    </td>
-                                    <td>
-                                        @item.User.FullName
-                                    </td>
-                                    <td>
-                                        @item.User.PhoneNumber
-                                    </td>
-                                    <td>@string.Join(", ", item.Roles)</td>
-                                    <td>
-                                        <button class="btn btn-danger" onclick="showDisableAccountModal('@item.User.Id')">Vô hiệu hóa</button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                            <tr>
-                                <th>
-                                    Email
-                                </th>
-                                <th>
-                                    Tên
-                                </th>
-                                <th>
-                                    Số điện thoại
-                                </th>
-                                <th>
-                                    Vai trò
-                                </th>
-                                <th>Hành động</th>
-                            </tr>
-                            </tr>
-                        </tfoot>
-                    </table>
-
-                </div>
-
+                    <ul class="nav nav-tabs" id="accountTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="customer-tab" data-toggle="tab" href="#customers" role="tab" aria-controls="customers" aria-selected="true">Khách hàng</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="restaurant-tab" data-toggle="tab" href="#restaurants" role="tab" aria-controls="restaurants" aria-selected="false">Nhà hàng</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="accountTabsContent">
+                        <div class="tab-pane fade show active" id="customers" role="tabpanel" aria-labelledby="customer-tab">
+                            @Html.Partial("_CustomerPartialView", Model.Customers)
+                        </div>
+                        <div class="tab-pane fade" id="restaurants" role="tabpanel" aria-labelledby="restaurant-tab">
+                            @Html.Partial("_RestaurantPartialView", Model.Restaurants)
+                        </div>
+                    </div>
+                
             </div>
         </div>
     </div>
@@ -102,12 +55,20 @@
     <script src="~/admin/assets/extra-libs/multicheck/jquery.multicheck.js"></script>
     <script src="~/admin/assets/extra-libs/DataTables/datatables.min.js"></script>
     <script>
-        /****************************************
-         *       Basic Table                   *
-         ****************************************/
-        $('#zero_config').DataTable();
-    </script>
-    <script>
+        $(document).ready(function () {
+            $('#customer_table').DataTable();
+            $('#restaurant_table').DataTable();
+        });
+
+        function showLockoutDetails(lockoutEnd) {
+            Swal.fire({
+                title: 'Thông tin vô hiệu hóa',
+                text: 'Tài khoản sẽ được kích hoạt lại vào: ' + new Date(lockoutEnd).toLocaleString(),
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
+        }
+
         function showDisableAccountModal(userId) {
             Swal.fire({
                 title: 'Chọn thời gian vô hiệu hóa',
@@ -121,7 +82,22 @@
                             <input type="number" id="customDuration" placeholder="Số ngày" style="display: none;" class="form-control">
                         `,
                 showCancelButton: true,
-                showConfirmButton: false
+                showConfirmButton: true,
+                preConfirm: () => {
+                    // Collect the custom duration value if the checkbox is checked
+                    let days = $('input[name="customDuration"]').val();
+                    if ($('#customDurationCheckbox').is(':checked')) {
+                        return days;
+                    }
+                    return null;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let customDays = result.value;
+                    if (customDays) {
+                        disableAccount(userId, customDays);
+                    }
+                }
             });
 
             $('#customDurationCheckbox').change(function () {
@@ -140,13 +116,22 @@
                 days = $('#customDuration').val();
             }
 
+
             $.ajax({
                 url: '@Url.Action("DisableAccount", "Account", new { area = "Admin" })',
                 type: 'POST',
                 data: { userId: userId, days: days },
                 success: function (result) {
-                    Swal.fire('Thành công!', 'Tài khoản đã được vô hiệu hóa.', 'success');
-                    // Refresh the page or update the UI as needed
+                    Swal.fire({
+                        title: 'Thành công!',
+                        text: 'Tài khoản đã được vô hiệu hóa.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload(); // Tải lại trang sau khi nhấp OK
+                        }
+                    });
                 },
                 error: function (error) {
                     Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi vô hiệu hóa tài khoản.', 'error');

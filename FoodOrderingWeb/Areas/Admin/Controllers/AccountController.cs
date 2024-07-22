@@ -24,23 +24,41 @@ namespace FoodOrderingWeb.Areas.Admin.Controllers
         // GET: AccountController
         public async Task<IActionResult> Index()
         {
-            var userList = await _userManager.Users.ToListAsync();
-            ViewData["CurrentPage"] = "Tài khoản";
+            var restaurants = await _context.Restaurants.Include(r => r.User).ToListAsync();
+            IList<User> customers = await _userManager.GetUsersInRoleAsync("Customer");
 
-            var userWithRoles = new List<UserRolesViewModel>();
-            foreach (var user in userList) 
+            var viewModel = new AccountVM
             {
-                var roles = await _userManager.GetRolesAsync(user);
-                userWithRoles.Add(new UserRolesViewModel
+                Restaurants = restaurants.Select(r => new RestaurantAccVM
                 {
-                    User=user,
-                    Roles=roles
-                });
-            }
-
-            return View(userWithRoles);
+                    Restaurant = r,
+                    LockoutEnd = r.User.LockoutEnd
+                }).ToList(),
+                Customers = customers.Select(user => new CustomerAccVM
+                {
+                    User = user,
+                    LockoutEnd = user.LockoutEnd
+                }).ToList()
+            };
+            ViewData["CurrentPage"] = "Quản lý tài khoản";
+            return View(viewModel);
         }
 
+
+        public async Task<IActionResult> CustomerAccount()
+        {
+            IList<User> customer = await _userManager.GetUsersInRoleAsync("Customer");
+            var customerAccount = new List<CustomerAccVM>();
+            foreach(var user in customer)
+            {
+                customerAccount.Add(new CustomerAccVM
+                {
+                    User = user,
+                    LockoutEnd = user.LockoutEnd
+                });
+            }
+            return View(customerAccount);
+        }
         [HttpPost]
         public async Task<IActionResult> DisableAccount(string userId, int? days)
         {
@@ -50,20 +68,25 @@ namespace FoodOrderingWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
+            // Kiểm tra giá trị days và thiết lập LockoutEnd tương ứng
             if (days.HasValue)
             {
-                if (days.Value == 0)
+                if (days.Value == -1)  // Nếu days = -1, vô hiệu hóa vĩnh viễn
                 {
                     user.LockoutEnd = DateTimeOffset.MaxValue;
                 }
+                else if (days.Value == 0)  // Nếu days = 0, không khóa tài khoản
+                {
+                    user.LockoutEnd = null; // Khóa tài khoản không có thời gian khóa
+                }
                 else
                 {
-                    user.LockoutEnd = DateTimeOffset.UtcNow.AddDays(days.Value);
+                    user.LockoutEnd = DateTimeOffset.UtcNow.AddDays(days.Value);  // Khóa tài khoản trong khoảng thời gian days
                 }
             }
             else
             {
-                user.LockoutEnd = DateTimeOffset.MaxValue;
+                user.LockoutEnd = DateTimeOffset.MaxValue;  // Nếu không có giá trị days, vô hiệu hóa vĩnh viễn
             }
 
             user.LockoutEnabled = true;
@@ -76,5 +99,6 @@ namespace FoodOrderingWeb.Areas.Admin.Controllers
 
             return BadRequest();
         }
+
     }
 }
