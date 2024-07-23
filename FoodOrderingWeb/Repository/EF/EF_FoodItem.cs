@@ -1,12 +1,14 @@
 ﻿using FoodOrderingWeb.DataAccess;
 using FoodOrderingWeb.Models;
 using FoodOrderingWeb.Repository.Interface;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodOrderingWeb.Repository.Framework
+namespace FoodOrderingWeb.Repository.EF
 {
     public class EF_FoodItem : Interface_FoodItemRepository
     {
+
         private readonly ApplicationDatabaseContext _context;
         public EF_FoodItem(ApplicationDatabaseContext context)
         {

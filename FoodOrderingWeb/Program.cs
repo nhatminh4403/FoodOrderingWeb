@@ -4,7 +4,7 @@ using Google;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using FoodOrderingWeb.Repository.Interface;
-using FoodOrderingWeb.Repository.Framework;
+using FoodOrderingWeb.Repository.EF;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

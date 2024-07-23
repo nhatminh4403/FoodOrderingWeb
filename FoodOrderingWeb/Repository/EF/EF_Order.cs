@@ -3,7 +3,7 @@ using FoodOrderingWeb.Models;
 using FoodOrderingWeb.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodOrderingWeb.Repository.Framework
+namespace FoodOrderingWeb.Repository.EF
 {
     public class EF_Order : Interface_OrderRepository
     {

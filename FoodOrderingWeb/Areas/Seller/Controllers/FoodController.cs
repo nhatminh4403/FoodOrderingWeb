@@ -1,9 +1,12 @@
-﻿using FoodOrderingWeb.Models;
+﻿using FoodOrderingWeb.DataAccess;
+using FoodOrderingWeb.Models;
 using FoodOrderingWeb.Repository.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace FoodOrderingWeb.Areas.Seller.Controllers
@@ -13,10 +16,13 @@ namespace FoodOrderingWeb.Areas.Seller.Controllers
     public class FoodController : Controller
     {
         private readonly UserManager<User> _userManager;
+        private readonly ApplicationDatabaseContext _context;
         private readonly Interface_FoodItemRepository _foodItemRepository;
         private readonly Interface_CategoryRepository _categoryRepository;
-        public FoodController(UserManager<User> userManager, Interface_FoodItemRepository foodItemRepository, Interface_CategoryRepository categoryRepository)
+        public FoodController(UserManager<User> userManager, Interface_FoodItemRepository foodItemRepository, ApplicationDatabaseContext context,
+            Interface_CategoryRepository categoryRepository)
         {
+            _context = context;
             _userManager = userManager;
             _foodItemRepository = foodItemRepository;
             _categoryRepository = categoryRepository;
@@ -51,81 +57,160 @@ namespace FoodOrderingWeb.Areas.Seller.Controllers
         private async Task<string?> SaveImage(IFormFile image)
         {
 
-            var savePath = Path.Combine("wwwroot/categoryIcons", image.FileName); //
+            var savePath = Path.Combine("wwwroot/foodImages", image.FileName); //
 
             using (var fileStream = new FileStream(savePath, FileMode.Create))
             {
                 await image.CopyToAsync(fileStream);
             }
-            return "/categoryIcons/" + image.FileName;
+            return "/foodImages/" + image.FileName;
         }
         // GET: FoodController/Details/5
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            return View();
+            var food = await _foodItemRepository.GetByIdAsync(id);
+            if (food == null)
+                return NotFound();
+
+            return View(food);
         }
 
         // GET: FoodController/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var categories = await _categoryRepository.GetCategoriesAsync();
+            ViewBag.Categories = new SelectList(categories,"Id", "Name");
             return View();
         }
 
         // POST: FoodController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> Create(FoodItem food, IFormFile MainPictureUrl, List<IFormFile> PictureLists)
         {
-            try
+            if (ModelState.IsValid)
             {
+                var user = await _userManager.GetUserAsync(User);
+
+                // Lấy nhà hàng của người dùng
+                var restaurant = await _context.Restaurants.FirstOrDefaultAsync(r => r.UserId == user.Id);
+                if (restaurant == null)
+                {
+                    return NotFound("Restaurant not found for the logged-in user.");
+                }
+
+                food.RestaurantId = restaurant.RestaurantId;
+
+                if (MainPictureUrl != null)
+                {
+                    food.MainPictureUrl = await SaveImage(MainPictureUrl);
+                }
+                if(PictureLists != null)
+                {
+                    food.PictureLists= new List<PictureLists>();
+                    foreach(var item  in PictureLists)
+                    {
+                        PictureLists image = new PictureLists
+                        {
+                            FoodItemId = food.FoodId,
+                            Url = await SaveImage(item)
+                        };
+                    }
+                }
+                await _foodItemRepository.AddAsync(food);
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            else
             {
-                return View();
+                var categories = await _categoryRepository.GetCategoriesAsync();
+                ViewBag.Categories = new SelectList(categories, "Id", "Name");
+                return View(food);
             }
         }
 
         // GET: FoodController/Edit/5
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            return View();
+            var food = await _foodItemRepository.GetByIdAsync(id);
+            if (food == null)
+            {
+                return NotFound();
+            }
+            var categories = await _categoryRepository.GetCategoriesAsync();
+            ViewBag.Categories = new SelectList(categories, "Id", "Name");
+            return View(food);
         }
 
         // POST: FoodController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, IFormCollection collection)
+        public async Task<IActionResult> Edit(int id, IFormFile MainPictureUrl, List<IFormFile> PictureLists, FoodItem food)
         {
-            try
+            ModelState.Remove("MainPictureUrl");
+            if (id != food.FoodId)
             {
+                return NotFound();
+            }
+            if (ModelState.IsValid)
+            {
+                var existingFood = await _foodItemRepository.GetByIdAsync(id);
+                
+
+
+                if (MainPictureUrl == null)
+                {
+                    food.MainPictureUrl = existingFood.MainPictureUrl;
+                }
+                else
+                {
+                    existingFood.MainPictureUrl = await SaveImage(MainPictureUrl);
+                }
+                if (PictureLists != null)
+                {
+                    food.PictureLists = new List<PictureLists>();
+                    foreach (var item in PictureLists)
+                    {
+                        PictureLists image = new PictureLists
+                        {
+                            FoodItemId = food.FoodId,
+                            Url = await SaveImage(item)
+                        };
+                    }
+                }
+
+                existingFood.FoodName = food.FoodName;
+                existingFood.FoodPrice = food.FoodPrice;
+                existingFood.FoodDescription = food.FoodDescription;
+                existingFood.CategoryId=food.CategoryId;
+                existingFood.MainPictureUrl = food.MainPictureUrl;
+                await _foodItemRepository.UpdateAsync(existingFood);
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            else
             {
-                return View();
+                var categories = await _categoryRepository.GetCategoriesAsync();
+                ViewBag.Categories = new SelectList(categories, "Id", "Name");
+                return View(food);
             }
         }
 
         // GET: FoodController/Delete/5
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            return View();
+            var food = await _foodItemRepository.GetByIdAsync(id);
+            if (food == null)
+                return NotFound();
+
+            return View(food);
         }
 
         // POST: FoodController/Delete/5
-        [HttpPost]
+        [HttpPost,ActionName(nameof(Delete))]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            await _foodItemRepository.DeleteAsync(id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

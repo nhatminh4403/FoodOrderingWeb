@@ -25,7 +25,7 @@ namespace FoodOrderingWeb.Models
         public string FoodDescription { get; set; }
 
         [DisplayName("Ảnh đại diện")]
-        public string MainPictureUrl { get; set; }
+        public string? MainPictureUrl { get; set; }
         public int CategoryId { get; set; }
 
         [ForeignKey(nameof(CategoryId))]
