@@ -44,6 +44,7 @@ namespace FoodOrderingWeb.Areas.Admin.Controllers
         }
         public IActionResult Create()
         {
+            ViewData["CurrentCRUDPage"] = "Thêm danh mục";
             return View();
         }
 

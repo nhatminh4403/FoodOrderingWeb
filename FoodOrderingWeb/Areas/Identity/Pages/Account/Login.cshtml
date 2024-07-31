@@ -6,6 +6,12 @@
 }
 @section Styles {
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.min.css" rel="stylesheet">
+    <style>
+        .validation-summary-errors ul{
+            padding-left:0rem;
+
+        }
+    </style>
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -59,7 +65,7 @@
     <script>
         $(document).ready(function () {
             $('#login-form').submit(function (event) {
-                event.preventDefault(); // Ngăn không cho form submit theo cách mặc định
+                //event.preventDefault();  Ngăn không cho form submit theo cách mặc định
 
                 $.ajax({
                     type: 'POST',
